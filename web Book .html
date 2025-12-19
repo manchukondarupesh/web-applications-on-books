@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Book Store</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#f2f2f2;
+  margin:0;
+}
+nav{
+  background:#333;
+  padding:10px;
+}
+nav button{
+  background:none;
+  border:none;
+  color:white;
+  margin:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+.container{
+  background:white;
+  padding:20px;
+  margin:30px;
+  border-radius:5px;
+}
+input{
+  display:block;
+  margin:10px 0;
+  padding:8px;
+  width:250px;
+}
+button{
+  padding:8px 15px;
+  cursor:pointer;
+}
+.book{
+  margin:10px 0;
+}
+.qr{
+  width:220px;
+  height:220px;
+  border:2px solid black;
+}
+.hidden{
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('login')">Login</button>
+<button onclick="showPage('register')">Register</button>
+<button onclick="showPage('catalogue')">Catalogue</button>
+<button onclick="showPage('cart')">Cart</button>
+<button onclick="showPage('payment')">Payment</button>
+</nav>
+
+<!-- HOME -->
+<div id="home" class="container">
+<h1>Welcome to Online Book Store</h1>
+<p>Buy academic and technical books online.</p>
+</div>
+
+<!-- LOGIN -->
+<div id="login" class="container hidden">
+<h2>Login</h2>
+<input id="userid" placeholder="User ID">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- REGISTER -->
+<div id="register" class="container hidden">
+<h2>Registration</h2>
+<input placeholder="Name">
+<input placeholder="Phone Number">
+<input placeholder="Email ID">
+<input type="password" placeholder="Password">
+<button onclick="alert('Registration Successful')">Register</button>
+</div>
+
+<!-- CATALOGUE -->
+<div id="catalogue" class="container hidden">
+<h2>Book Catalogue</h2>
+
+<div class="book">
+Java Programming - ₹500
+<button onclick="addToCart('Java Programming',500)">Add to Cart</button>
+</div>
+
+<div class="book">
+Python Programming - ₹600
+<button onclick="addToCart('Python Programming',600)">Add to Cart</button>
+</div>
+
+<div class="book">
+Web Development - ₹450
+<button onclick="addToCart('Web Development',450)">Add to Cart</button>
+</div>
+</div>
+
+<!-- CART -->
+<div id="cart" class="container hidden">
+<h2>Your Cart</h2>
+<ul id="cartItems"></ul>
+<h3 id="total"></h3>
+<button onclick="showPage('payment')">Proceed to Payment</button>
+</div>
+
+<!-- PAYMENT -->
+<div id="payment" class="container hidden">
+<h2>Payment</h2>
+
+<p><b>UPI ID:</b> 7337595753@ibl</p>
+<p><b>Amount:</b> ₹<span id="payAmount"></span></p>
+
+<img
+  id="qrImage"
+  class="qr"
+  alt="UPI QR Code"
+/>
+
+<br><br>
+<button onclick="completePayment()">Pay Now</button>
+</div>
+
+<!-- SUCCESS -->
+<div id="success" class="container hidden">
+<h1>Payment Successful 🎉</h1>
+<p>Thank you for shopping with us.</p>
+<button onclick="showPage('home')">Back to Home</button>
+</div>
+
+<script>
+let cart = [];
+const upiId = "7337595753@ibl";
+
+function showPage(page){
+  document.querySelectorAll('.container')
+    .forEach(div => div.classList.add('hidden'));
+  document.getElementById(page).classList.remove('hidden');
+
+  if(page === 'cart') loadCart();
+  if(page === 'payment') loadPayment();
+}
+
+function addToCart(book, price){
+  cart.push({book, price});
+  alert(book + " added to cart");
+}
+
+function loadCart(){
+  let list = document.getElementById("cartItems");
+  let total = 0;
+  list.innerHTML = "";
+
+  cart.forEach(item => {
+    let li = document.createElement("li");
+    li.innerText = item.book + " - ₹" + item.price;
+    list.appendChild(li);
+    total += item.price;
+  });
+
+  document.getElementById("total").innerText =
+    "Total Amount: ₹" + total;
+}
+
+function loadPayment(){
+  let total = 0;
+  cart.forEach(item => total += item.price);
+  document.getElementById("payAmount").innerText = total;
+
+  // Generate QR Code dynamically
+  let upiString = `upi://pay?pa=${upiId}&pn=OnlineBookStore&am=${total}&cu=INR`;
+  document.getElementById("qrImage").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
+    encodeURIComponent(upiString);
+}
+
+function completePayment(){
+  cart = [];
+  showPage('success');
+}
+
+function login(){
+  let u = document.getElementById("userid").value;
+  let p = document.getElementById("password").value;
+  if(u && p)
+    alert("Login Successful");
+  else
+    alert("Enter User ID and Password");
+}
+</script>
+
+</body>
+</html>
